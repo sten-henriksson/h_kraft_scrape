@@ -32,7 +32,7 @@ class HalsokraftSpider:
             print(f"Error processing {url}: {e}")
             return set()
     
-    def crawl(self, max_pages=100):
+    def crawl(self, max_pages=100, ignore_patterns=None):
         results = []
         crawl_data = {
             'timestamp': datetime.now().isoformat(),
@@ -40,9 +40,17 @@ class HalsokraftSpider:
             'results': []
         }
         
+        # Default ignore patterns
+        if ignore_patterns is None:
+            ignore_patterns = ['recept']
+        
         while self.queue and len(results) < max_pages:
             current_url = self.queue.popleft()
             
+            # Skip if URL matches any ignore pattern
+            if any(pattern in current_url for pattern in ignore_patterns):
+                continue
+                
             if current_url in self.visited:
                 continue
                 
@@ -102,8 +110,9 @@ class HalsokraftSpider:
         return results
 
 if __name__ == "__main__":
-    spider = HalsokraftSpider("https://halsokraft.se/inspiration/recept")
-    results = spider.crawl(max_pages=10)  # Limit to 10 pages for demo
+    spider = HalsokraftSpider("https://halsokraft.se")
+    # Ignore URLs containing 'recept' or other patterns
+    results = spider.crawl(max_pages=10, ignore_patterns=['recept'])  # Limit to 10 pages for demo
     
     print("\nCrawl Results:")
     for result in results:
