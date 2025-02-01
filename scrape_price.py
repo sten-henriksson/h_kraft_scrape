@@ -36,9 +36,14 @@ def scrape_price(url):
             except Exception as e:
                 print(f"Error extracting price from {url}: {e}")
         
+        # Extract product title
+        title_element = soup.find('h1', {'data-testid': 'product-title'})
+        title = title_element.text.strip() if title_element else "Title not found"
+        
         # Create and return JSON data
         return json.dumps({
             "url": url,
+            "title": title,
             "price": price,
             "is_product_page": price != "Price not found"
         }, indent=4)
