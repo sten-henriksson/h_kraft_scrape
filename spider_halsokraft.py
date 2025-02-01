@@ -46,6 +46,18 @@ class HalsokraftSpider:
         # Default ignore patterns
         if ignore_patterns is None:
             ignore_patterns = ['recept']
+            
+        # Load existing scraped URLs
+        scraped_urls = set()
+        if os.path.exists(RESULTS_FILE):
+            try:
+                with open(RESULTS_FILE, 'r') as f:
+                    all_data = json.load(f)
+                    for crawl in all_data:
+                        for result in crawl['results']:
+                            scraped_urls.add(result['url'])
+            except json.JSONDecodeError:
+                pass
         
         while self.queue and len(results) < max_pages:
             current_url = self.queue.popleft()
@@ -54,10 +66,12 @@ class HalsokraftSpider:
             if any(pattern in current_url for pattern in ignore_patterns):
                 continue
                 
-            if current_url in self.visited:
+            # Skip if URL already visited or previously scraped
+            if current_url in self.visited or current_url in scraped_urls:
                 continue
                 
             self.visited.add(current_url)
+            scraped_urls.add(current_url)
             print(f"Crawling: {current_url}")
             
             new_links = self.extract_links(current_url)
@@ -95,21 +109,23 @@ class HalsokraftSpider:
         crawl_data['results'] = results
         
         # Load existing data or create new list
+        all_data = []
         if os.path.exists(RESULTS_FILE):
             try:
                 with open(RESULTS_FILE, 'r') as f:
                     all_data = json.load(f)
             except json.JSONDecodeError:
-                all_data = []
-        else:
-            all_data = []
-        
+                pass
+                
         # Append new crawl data
         all_data.append(crawl_data)
         
         # Save updated data
-        with open(RESULTS_FILE, 'w') as f:
-            json.dump(all_data, f, indent=4)
+        try:
+            with open(RESULTS_FILE, 'w') as f:
+                json.dump(all_data, f, indent=4)
+        except Exception as e:
+            print(f"Error saving results: {e}")
         
         return results
 
