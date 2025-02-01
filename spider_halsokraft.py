@@ -10,14 +10,17 @@ from scrape_price import scrape_price
 RESULTS_FILE = 'crawl_results.json'
 
 class HalsokraftSpider:
-    def __init__(self, base_url):
+    def __init__(self, base_url, wait_time=1):
         self.base_url = base_url
         self.visited = set()
         self.queue = deque()
         self.queue.append(base_url)
+        self.wait_time = wait_time  # Seconds to wait between requests
         
     def extract_links(self, url):
         try:
+            import time
+            time.sleep(self.wait_time)  # Wait before making the request
             response = requests.get(url)
             soup = BeautifulSoup(response.text, 'html.parser')
             links = set()
@@ -110,9 +113,20 @@ class HalsokraftSpider:
         return results
 
 if __name__ == "__main__":
-    spider = HalsokraftSpider("https://halsokraft.se")
-    # Ignore URLs containing 'recept' or other patterns
-    results = spider.crawl(max_pages=10, ignore_patterns=['recept'])  # Limit to 10 pages for demo
+    import argparse
+    
+    parser = argparse.ArgumentParser(description='Crawl halsokraft.se website')
+    parser.add_argument('--wait', type=float, default=1.0,
+                       help='Wait time between requests in seconds')
+    parser.add_argument('--max-pages', type=int, default=10,
+                       help='Maximum number of pages to crawl')
+    parser.add_argument('--ignore-patterns', nargs='*', default=['recept'],
+                       help='URL patterns to ignore')
+    
+    args = parser.parse_args()
+    
+    spider = HalsokraftSpider("https://halsokraft.se", wait_time=args.wait)
+    results = spider.crawl(max_pages=args.max_pages, ignore_patterns=args.ignore_patterns)
     
     print("\nCrawl Results:")
     for result in results:
