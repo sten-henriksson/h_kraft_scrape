@@ -102,7 +102,7 @@ class HalsokraftSpider:
         return results
 
 if __name__ == "__main__":
-    spider = HalsokraftSpider("https://halsokraft.se")
+    spider = HalsokraftSpider("https://halsokraft.se/inspiration/recept")
     results = spider.crawl(max_pages=10)  # Limit to 10 pages for demo
     
     print("\nCrawl Results:")
@@ -110,8 +110,8 @@ if __name__ == "__main__":
         print(f"\nURL: {result['url']}")
         if result.get('error'):
             print(f"Error: {result['error']}")
-        else:
-            print(f"Price: {result['price']}")
+        else:   
+            print(f"Price: {result}")
         print(f"Links found: {len(result['links'])}")
     
     print(f"\nTotal pages crawled: {len(results)}")
