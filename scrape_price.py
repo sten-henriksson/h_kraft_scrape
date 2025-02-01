@@ -16,15 +16,25 @@ def scrape_price(url):
         price = "Price not found"
         
         # Look for price in common locations
-        price_element = soup.find('span', class_='price') or \
-                       soup.find('div', class_='price') or \
-                       soup.find('meta', itemprop='price')
+        price_elements = [
+            soup.find('span', class_='price'),
+            soup.find('div', class_='price'),
+            soup.find('meta', itemprop='price'),
+            soup.find('div', {'class': lambda x: x and 'price' in x}),
+            soup.find('span', {'class': lambda x: x and 'price' in x})
+        ]
+        
+        # Find first valid price element
+        price_element = next((el for el in price_elements if el is not None), None)
         
         if price_element:
-            if price_element.get('content'):
-                price = price_element['content']
-            else:
-                price = price_element.text.strip()
+            try:
+                if price_element.get('content'):
+                    price = price_element['content']
+                else:
+                    price = price_element.text.strip()
+            except Exception as e:
+                print(f"Error extracting price from {url}: {e}")
         
         # Create and return JSON data
         return json.dumps({

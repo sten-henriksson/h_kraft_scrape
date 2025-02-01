@@ -40,20 +40,28 @@ class HalsokraftSpider:
             print(f"Crawling: {current_url}")
             
             new_links = self.extract_links(current_url)
-            # Scrape price
-            price_data = json.loads(scrape_price(current_url))
-            
-            # Only store price details if it's a product page
-            result = {
-                'url': current_url,
-                'links': list(new_links)
-            }
-            
-            if price_data.get('is_product_page', False):
-                result.update({
-                    'price': price_data.get('price', 'N/A'),
-                    'error': price_data.get('error')
-                })
+            # Scrape price with error handling
+            try:
+                price_data = json.loads(scrape_price(current_url))
+                
+                # Only store price details if it's a product page
+                result = {
+                    'url': current_url,
+                    'links': list(new_links)
+                }
+                
+                if price_data.get('is_product_page', False):
+                    result.update({
+                        'price': price_data.get('price', 'N/A'),
+                        'error': price_data.get('error')
+                    })
+            except Exception as e:
+                print(f"Error scraping price from {current_url}: {e}")
+                result = {
+                    'url': current_url,
+                    'links': list(new_links),
+                    'error': str(e)
+                }
             
             results.append(result)
             
