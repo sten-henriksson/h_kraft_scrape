@@ -40,15 +40,22 @@ class HalsokraftSpider:
             print(f"Crawling: {current_url}")
             
             new_links = self.extract_links(current_url)
-            # Scrape price if this is a product page
+            # Scrape price
             price_data = json.loads(scrape_price(current_url))
             
-            results.append({
+            # Only store price details if it's a product page
+            result = {
                 'url': current_url,
-                'links': list(new_links),
-                'price': price_data.get('price', 'N/A'),
-                'error': price_data.get('error')
-            })
+                'links': list(new_links)
+            }
+            
+            if price_data.get('is_product_page', False):
+                result.update({
+                    'price': price_data.get('price', 'N/A'),
+                    'error': price_data.get('error')
+                })
+            
+            results.append(result)
             
             for link in new_links:
                 if link not in self.visited:

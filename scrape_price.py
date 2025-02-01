@@ -12,14 +12,25 @@ def scrape_price(url):
         # Parse the HTML
         soup = BeautifulSoup(response.content, 'html.parser')
         
-        # Find the price element
-        price_element = soup.find('div', class_='wfsqmst').find('div', class_='price n77d0ua')
-        price = price_element.text.strip() if price_element else "Price not found"
+        # Try to find price in different possible locations
+        price = "Price not found"
+        
+        # Look for price in common locations
+        price_element = soup.find('span', class_='price') or \
+                       soup.find('div', class_='price') or \
+                       soup.find('meta', itemprop='price')
+        
+        if price_element:
+            if price_element.get('content'):
+                price = price_element['content']
+            else:
+                price = price_element.text.strip()
         
         # Create and return JSON data
         return json.dumps({
             "url": url,
-            "price": price
+            "price": price,
+            "is_product_page": price != "Price not found"
         }, indent=4)
         
     except requests.RequestException as e:
