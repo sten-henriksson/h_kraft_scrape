@@ -73,6 +73,7 @@ class HalsokraftSpider:
                 
                 if price_data.get('is_product_page', False):
                     result.update({
+                        'title': price_data.get('title', 'Title not found'),
                         'price': price_data.get('price', 'N/A'),
                         'error': price_data.get('error')
                     })
@@ -134,7 +135,8 @@ if __name__ == "__main__":
         if result.get('error'):
             print(f"Error: {result['error']}")
         else:   
-            print(f"Price: {result}")
+            print(f"Title: {result.get('title', 'N/A')}")
+            print(f"Price: {result.get('price', 'N/A')}")
         print(f"Links found: {len(result['links'])}")
     
     print(f"\nTotal pages crawled: {len(results)}")
