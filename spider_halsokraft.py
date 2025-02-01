@@ -101,31 +101,35 @@ class HalsokraftSpider:
             
             results.append(result)
             
+            # Update JSON file after each successful scrape
+            try:
+                # Load existing data
+                all_data = []
+                if os.path.exists(RESULTS_FILE):
+                    try:
+                        with open(RESULTS_FILE, 'r') as f:
+                            all_data = json.load(f)
+                    except json.JSONDecodeError:
+                        pass
+                
+                # Create new crawl data if this is the first result
+                if not all_data or all_data[-1]['timestamp'] != crawl_data['timestamp']:
+                    all_data.append(crawl_data)
+                
+                # Add result to latest crawl
+                all_data[-1]['results'].append(result)
+                all_data[-1]['pages_crawled'] = len(all_data[-1]['results'])
+                
+                # Save updated data
+                with open(RESULTS_FILE, 'w') as f:
+                    json.dump(all_data, f, indent=4)
+            except Exception as e:
+                print(f"Error updating results file: {e}")
+            
+            # Add new links to queue
             for link in new_links:
                 if link not in self.visited:
                     self.queue.append(link)
-        
-        crawl_data['pages_crawled'] = len(results)
-        crawl_data['results'] = results
-        
-        # Load existing data or create new list
-        all_data = []
-        if os.path.exists(RESULTS_FILE):
-            try:
-                with open(RESULTS_FILE, 'r') as f:
-                    all_data = json.load(f)
-            except json.JSONDecodeError:
-                pass
-                
-        # Append new crawl data
-        all_data.append(crawl_data)
-        
-        # Save updated data
-        try:
-            with open(RESULTS_FILE, 'w') as f:
-                json.dump(all_data, f, indent=4)
-        except Exception as e:
-            print(f"Error saving results: {e}")
         
         return results
 
