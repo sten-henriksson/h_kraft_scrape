@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 from collections import deque
+from scrape_price import scrape_price
 
 class HalsokraftSpider:
     def __init__(self, base_url):
@@ -38,9 +39,14 @@ class HalsokraftSpider:
             print(f"Crawling: {current_url}")
             
             new_links = self.extract_links(current_url)
+            # Scrape price if this is a product page
+            price_data = json.loads(scrape_price(current_url))
+            
             results.append({
                 'url': current_url,
-                'links': list(new_links)
+                'links': list(new_links),
+                'price': price_data.get('price', 'N/A'),
+                'error': price_data.get('error')
             })
             
             for link in new_links:
@@ -51,5 +57,15 @@ class HalsokraftSpider:
 
 if __name__ == "__main__":
     spider = HalsokraftSpider("https://halsokraft.se")
-    results = spider.crawl()
-    print(f"Crawled {len(results)} pages")
+    results = spider.crawl(max_pages=10)  # Limit to 10 pages for demo
+    
+    print("\nCrawl Results:")
+    for result in results:
+        print(f"\nURL: {result['url']}")
+        if result.get('error'):
+            print(f"Error: {result['error']}")
+        else:
+            print(f"Price: {result['price']}")
+        print(f"Links found: {len(result['links'])}")
+    
+    print(f"\nTotal pages crawled: {len(results)}")
