@@ -1,9 +1,13 @@
 import requests
 import json
+import os
+from datetime import datetime
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 from collections import deque
 from scrape_price import scrape_price
+
+RESULTS_FILE = 'crawl_results.json'
 
 class HalsokraftSpider:
     def __init__(self, base_url):
@@ -30,6 +34,12 @@ class HalsokraftSpider:
     
     def crawl(self, max_pages=100):
         results = []
+        crawl_data = {
+            'timestamp': datetime.now().isoformat(),
+            'pages_crawled': 0,
+            'results': []
+        }
+        
         while self.queue and len(results) < max_pages:
             current_url = self.queue.popleft()
             
