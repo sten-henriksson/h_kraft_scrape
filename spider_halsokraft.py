@@ -69,6 +69,26 @@ class HalsokraftSpider:
                 if link not in self.visited:
                     self.queue.append(link)
         
+        crawl_data['pages_crawled'] = len(results)
+        crawl_data['results'] = results
+        
+        # Load existing data or create new list
+        if os.path.exists(RESULTS_FILE):
+            try:
+                with open(RESULTS_FILE, 'r') as f:
+                    all_data = json.load(f)
+            except json.JSONDecodeError:
+                all_data = []
+        else:
+            all_data = []
+        
+        # Append new crawl data
+        all_data.append(crawl_data)
+        
+        # Save updated data
+        with open(RESULTS_FILE, 'w') as f:
+            json.dump(all_data, f, indent=4)
+        
         return results
 
 if __name__ == "__main__":
@@ -85,3 +105,4 @@ if __name__ == "__main__":
         print(f"Links found: {len(result['links'])}")
     
     print(f"\nTotal pages crawled: {len(results)}")
+    print(f"Results saved to {RESULTS_FILE}")
