@@ -139,7 +139,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Crawl halsokraft.se website')
     parser.add_argument('--wait', type=float, default=0.3,
                        help='Wait time between requests in seconds')
-    parser.add_argument('--max-pages', type=int, default=10,
+    parser.add_argument('--max-pages', type=int, default=5000,
                        help='Maximum number of pages to crawl')
     parser.add_argument('--ignore-patterns', nargs='*', default=['recept'],
                        help='URL patterns to ignore')
