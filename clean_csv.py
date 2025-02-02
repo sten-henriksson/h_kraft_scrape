@@ -16,7 +16,9 @@ def json_to_csv(input_file, output_file):
         writer.writerow(['title', 'price'])  # Write header
         
         for item in results:
-            writer.writerow([item['title'], item['price']])
+            title = item.get('title', 'No Title')
+            price = item.get('price', 'No Price')
+            writer.writerow([title, price])
 
 if __name__ == '__main__':
     json_to_csv('crawled_clean.json', 'output.csv')
