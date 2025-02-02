@@ -23,12 +23,15 @@ def clean_to_csv(input_file, output_file):
     with open(input_file, 'r') as f:
         data = json.load(f)
     
+    # Handle both list and dictionary formats
+    results = data if isinstance(data, list) else data['results']
+    
     with open(output_file, 'w', newline='') as csvfile:
         fieldnames = ['title', 'price']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         
         writer.writeheader()
-        for result in data['results']:
+        for result in results:
             writer.writerow({
                 'title': result['title'],
                 'price': result['price']
