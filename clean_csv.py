@@ -35,6 +35,5 @@ def clean_to_csv(input_file, output_file):
             })
 
 if __name__ == "__main__":
-    # Convert both files
-    json_to_csv('crawl_results.json', 'crawl_results.csv')
+
     clean_to_csv('crawled_clean.json', 'cleaned_results.csv')
