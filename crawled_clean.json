@@ -1,11 +1,10 @@
-[
-    {
-        "timestamp": "2025-02-02T01:37:29.394104",
-        "pages_crawled": 5318,
-        "results": [
-            {
-                "url": "https://halsokraft.se/kosttillskott/vitaminer/b-vitamin/mega-b-metylerad-90-kapslar-1",
-                "links": [
+{
+    "timestamp": "2025-02-02T01:37:29.394104",
+    "pages_crawled": 5318,
+    "results": [
+        {
+            "url": "https://halsokraft.se/kosttillskott/vitaminer/b-vitamin/mega-b-metylerad-90-kapslar-1",
+            "links": [
                     "https://halsokraft.se/varumarken/holistic",
                     "https://halsokraft.se/kundtjanst/kopvillkor",
                     "https://halsokraft.se/behandlingar-1",
